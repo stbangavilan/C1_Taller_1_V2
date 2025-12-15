@@ -1,0 +1,82 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-stock-heading" data-cy="StockCreateUpdateHeading" jhiTranslate="inventarioApp.stock.home.createOrEditLabel">
+        Create or edit a Stock
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="inventarioApp.stock.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let cantidadRef = editForm.get('cantidad')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_cantidad" jhiTranslate="inventarioApp.stock.cantidad">Cantidad</label>
+          <input type="number" class="form-control" name="cantidad" id="field_cantidad" data-cy="cantidad" formControlName="cantidad" />
+          @if (cantidadRef.invalid && (cantidadRef.dirty || cantidadRef.touched)) {
+            <div>
+              @if (editForm.get('cantidad')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('cantidad')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_producto" jhiTranslate="inventarioApp.stock.producto">Producto</label>
+          <select
+            class="form-control"
+            id="field_producto"
+            data-cy="producto"
+            name="producto"
+            formControlName="producto"
+            [compareWith]="compareProducto"
+          >
+            <option [ngValue]="null"></option>
+            @for (productoOption of productosSharedCollection; track $index) {
+              <option [ngValue]="productoOption">{{ productoOption.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_local" jhiTranslate="inventarioApp.stock.local">Local</label>
+          <select class="form-control" id="field_local" data-cy="local" name="local" formControlName="local" [compareWith]="compareLocal">
+            <option [ngValue]="null"></option>
+            @for (localOption of localsSharedCollection; track $index) {
+              <option [ngValue]="localOption">{{ localOption.nombre }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

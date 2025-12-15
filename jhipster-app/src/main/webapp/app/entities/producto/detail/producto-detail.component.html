@@ -1,0 +1,78 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (producto(); as productoRef) {
+      <div>
+        <h2 data-cy="productoDetailsHeading"><span jhiTranslate="inventarioApp.producto.detail.title">Producto</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ productoRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.sku">Sku</span></dt>
+          <dd>
+            <span>{{ productoRef.sku }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.nombre">Nombre</span></dt>
+          <dd>
+            <span>{{ productoRef.nombre }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.pesoPorUnidadKg">Peso Por Unidad Kg</span></dt>
+          <dd>
+            <span>{{ productoRef.pesoPorUnidadKg }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.volumenPorUnidadL">Volumen Por Unidad L</span></dt>
+          <dd>
+            <span>{{ productoRef.volumenPorUnidadL }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.fechaCreacion">Fecha Creacion</span></dt>
+          <dd>
+            <span>{{ productoRef.fechaCreacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.fechaModificacion">Fecha Modificacion</span></dt>
+          <dd>
+            <span>{{ productoRef.fechaModificacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.usuarioCreacion">Usuario Creacion</span></dt>
+          <dd>
+            <span>{{ productoRef.usuarioCreacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.usuarioModificacion">Usuario Modificacion</span></dt>
+          <dd>
+            <span>{{ productoRef.usuarioModificacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.unidadMedida">Unidad Medida</span></dt>
+          <dd>
+            @if (producto()!.unidadMedida) {
+              <div>
+                <a [routerLink]="['/unidad-medida', producto()!.unidadMedida?.id, 'view']">{{ productoRef.unidadMedida?.codigo }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.producto.categoria">Categoria</span></dt>
+          <dd>
+            @if (producto()!.categoria) {
+              <div>
+                <a [routerLink]="['/categoria', producto()!.categoria?.id, 'view']">{{ productoRef.categoria?.nombre }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/producto', productoRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (categoria(); as categoriaRef) {
+      <div>
+        <h2 data-cy="categoriaDetailsHeading"><span jhiTranslate="inventarioApp.categoria.detail.title">Categoria</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ categoriaRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.categoria.nombre">Nombre</span></dt>
+          <dd>
+            <span>{{ categoriaRef.nombre }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.categoria.descripcion">Descripcion</span></dt>
+          <dd>
+            <span>{{ categoriaRef.descripcion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.categoria.fechaCreacion">Fecha Creacion</span></dt>
+          <dd>
+            <span>{{ categoriaRef.fechaCreacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.categoria.fechaModificacion">Fecha Modificacion</span></dt>
+          <dd>
+            <span>{{ categoriaRef.fechaModificacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.categoria.usuarioCreacion">Usuario Creacion</span></dt>
+          <dd>
+            <span>{{ categoriaRef.usuarioCreacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.categoria.usuarioModificacion">Usuario Modificacion</span></dt>
+          <dd>
+            <span>{{ categoriaRef.usuarioModificacion }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/categoria', categoriaRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,21 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "authenticationType": "jwt",
+    "baseName": "inventario",
+    "buildTool": "maven",
+    "clientFramework": "angular",
+    "devDatabaseType": "h2Disk",
+    "enableHibernateCache": true,
+    "entities": ["UnidadMedida", "Categoria", "Producto", "Local", "Stock", "Movimiento"],
+    "jhipsterVersion": "8.11.0",
+    "jwtSecretKey": "YTkyYTQzOTRhNTg2YTE4ZjRhZjgxYTA0MmY4ZGYwY2IyZjlhZDdmNmY1MmFmZGZjNjE5NzI0MDE3ZGQ1M2YzZGM5YTBmMDhlNmI5YjdlZjhmNzQ1MmE3YmJjNTdjMjY2Yjc4OTg2YTY0NjhmY2FkOGZjYmZlNTYzMzkxN2QyOGM=",
+    "languages": ["en"],
+    "lastLiquibaseTimestamp": 1765050974000,
+    "monorepository": true,
+    "nativeLanguage": "en",
+    "packageName": "py.edu.ucom.taller1",
+    "prodDatabaseType": "postgresql",
+    "skipCommitHook": true
+  }
+}

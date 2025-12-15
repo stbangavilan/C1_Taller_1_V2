@@ -1,0 +1,11 @@
+{
+  "inventarioApp": {
+    "TipoMovimiento": {
+      "null": "",
+      "ENTRADA": "ENTRADA",
+      "SALIDA": "SALIDA",
+      "TRANSFERENCIA": "TRANSFERENCIA",
+      "AJUSTE": "AJUSTE"
+    }
+  }
+}

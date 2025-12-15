@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (stock(); as stockRef) {
+      <div>
+        <h2 data-cy="stockDetailsHeading"><span jhiTranslate="inventarioApp.stock.detail.title">Stock</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ stockRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.stock.cantidad">Cantidad</span></dt>
+          <dd>
+            <span>{{ stockRef.cantidad }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.stock.producto">Producto</span></dt>
+          <dd>
+            @if (stock()!.producto) {
+              <div>
+                <a [routerLink]="['/producto', stock()!.producto?.id, 'view']">{{ stockRef.producto?.nombre }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.stock.local">Local</span></dt>
+          <dd>
+            @if (stock()!.local) {
+              <div>
+                <a [routerLink]="['/local', stock()!.local?.id, 'view']">{{ stockRef.local?.nombre }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/stock', stockRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,90 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (movimiento(); as movimientoRef) {
+      <div>
+        <h2 data-cy="movimientoDetailsHeading"><span jhiTranslate="inventarioApp.movimiento.detail.title">Movimiento</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ movimientoRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.tipo">Tipo</span></dt>
+          <dd>
+            <span [jhiTranslate]="'inventarioApp.TipoMovimiento.' + (movimientoRef.tipo ?? 'null')">{{
+              { null: '', ENTRADA: 'ENTRADA', SALIDA: 'SALIDA', TRANSFERENCIA: 'TRANSFERENCIA', AJUSTE: 'AJUSTE' }[
+                movimientoRef.tipo ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.cantidad">Cantidad</span></dt>
+          <dd>
+            <span>{{ movimientoRef.cantidad }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.referencia">Referencia</span></dt>
+          <dd>
+            <span>{{ movimientoRef.referencia }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.fechaMovimiento">Fecha Movimiento</span></dt>
+          <dd>
+            <span>{{ movimientoRef.fechaMovimiento | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.fechaCreacion">Fecha Creacion</span></dt>
+          <dd>
+            <span>{{ movimientoRef.fechaCreacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.fechaModificacion">Fecha Modificacion</span></dt>
+          <dd>
+            <span>{{ movimientoRef.fechaModificacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.usuarioCreacion">Usuario Creacion</span></dt>
+          <dd>
+            <span>{{ movimientoRef.usuarioCreacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.usuarioModificacion">Usuario Modificacion</span></dt>
+          <dd>
+            <span>{{ movimientoRef.usuarioModificacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.producto">Producto</span></dt>
+          <dd>
+            @if (movimiento()!.producto) {
+              <div>
+                <a [routerLink]="['/producto', movimiento()!.producto?.id, 'view']">{{ movimientoRef.producto?.nombre }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.localOrigen">Local Origen</span></dt>
+          <dd>
+            @if (movimiento()!.localOrigen) {
+              <div>
+                <a [routerLink]="['/local', movimiento()!.localOrigen?.id, 'view']">{{ movimientoRef.localOrigen?.nombre }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.movimiento.localDestino">Local Destino</span></dt>
+          <dd>
+            @if (movimiento()!.localDestino) {
+              <div>
+                <a [routerLink]="['/local', movimiento()!.localDestino?.id, 'view']">{{ movimientoRef.localDestino?.nombre }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/movimiento', movimientoRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,130 @@
+application {
+  config {
+    baseName inventario
+    applicationType monolith
+    packageName py.edu.ucom.taller1
+    authenticationType jwt
+    prodDatabaseType postgresql
+    devDatabaseType h2Disk
+    buildTool maven
+    clientFramework angular
+    enableHibernateCache true
+  }
+  entities *
+}
+
+/**
+ * ENUMS
+ */
+enum DimensionUnidad {
+  UNIDAD,
+  PESO,
+  VOLUMEN
+}
+
+enum TipoMovimiento {
+  ENTRADA,
+  SALIDA,
+  TRANSFERENCIA,
+  AJUSTE
+}
+
+/**
+ * ENTIDADES
+ */
+
+// Unidades de medida (UN, KG, L, etc.)
+entity UnidadMedida {
+  codigo String required unique maxlength(10) // 'UN','KG','L'
+  nombre String required maxlength(50)
+  dimension DimensionUnidad required
+}
+
+// Categorías de productos
+entity Categoria {
+  nombre String required unique maxlength(120)
+  descripcion String maxlength(255)
+
+  // Auditoría básica
+  fechaCreacion Instant
+  fechaModificacion Instant
+  usuarioCreacion String maxlength(100)
+  usuarioModificacion String maxlength(100)
+}
+
+// Productos
+entity Producto {
+  sku String required unique maxlength(64)
+  nombre String required maxlength(150)
+  pesoPorUnidadKg BigDecimal
+  volumenPorUnidadL BigDecimal
+
+  // Auditoría
+  fechaCreacion Instant
+  fechaModificacion Instant
+  usuarioCreacion String maxlength(100)
+  usuarioModificacion String maxlength(100)
+}
+
+// Locales / depósitos
+entity Local {
+  nombre String required unique maxlength(120)
+  ubicacion String maxlength(200)
+
+  // Auditoría
+  fechaCreacion Instant
+  fechaModificacion Instant
+  usuarioCreacion String maxlength(100)
+  usuarioModificacion String maxlength(100)
+}
+
+// Stock por producto y local
+entity Stock {
+  cantidad BigDecimal required
+
+  // NOTA: el índice único (producto, local) se puede crear luego en BD.
+}
+
+// Movimientos de inventario
+entity Movimiento {
+  tipo TipoMovimiento required
+  cantidad BigDecimal required
+  referencia String maxlength(120)
+  fechaMovimiento Instant required
+
+  // Auditoría
+  fechaCreacion Instant
+  fechaModificacion Instant
+  usuarioCreacion String maxlength(100)
+  usuarioModificacion String maxlength(100)
+}
+
+/**
+ * RELACIONES
+ */
+
+// Producto -> UnidadMedida, Categoria
+relationship ManyToOne {
+  Producto{unidadMedida(codigo)} to UnidadMedida,
+  Producto{categoria(nombre)} to Categoria
+}
+
+// Stock -> Producto, Local
+relationship ManyToOne {
+  Stock{producto(nombre)} to Producto,
+  Stock{local(nombre)} to Local
+}
+
+// Movimiento -> Producto, Local origen/destino
+relationship ManyToOne {
+  Movimiento{producto(nombre)} to Producto,
+  Movimiento{localOrigen(nombre)} to Local,
+  Movimiento{localDestino(nombre)} to Local
+}
+
+/**
+ * OPCIONES GENERALES (opcionales, sin paginate para evitar warning)
+ */
+dto * with mapstruct
+service * with serviceClass
+// paginate * with pagination

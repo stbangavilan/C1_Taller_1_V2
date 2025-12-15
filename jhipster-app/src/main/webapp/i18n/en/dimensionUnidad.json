@@ -1,0 +1,10 @@
+{
+  "inventarioApp": {
+    "DimensionUnidad": {
+      "null": "",
+      "UNIDAD": "UNIDAD",
+      "PESO": "PESO",
+      "VOLUMEN": "VOLUMEN"
+    }
+  }
+}

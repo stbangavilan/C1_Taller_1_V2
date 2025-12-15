@@ -1,0 +1,185 @@
+<div>
+  <h2 id="page-heading" data-cy="MovimientoHeading">
+    <span jhiTranslate="inventarioApp.movimiento.home.title">Movimientos</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="inventarioApp.movimiento.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-movimiento"
+        [routerLink]="['/movimiento/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="inventarioApp.movimiento.home.createLabel">Create a new Movimiento</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (movimientos().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="inventarioApp.movimiento.home.notFound">No Movimientos found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="tipo">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.tipo">Tipo</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="cantidad">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.cantidad">Cantidad</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="referencia">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.referencia">Referencia</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fechaMovimiento">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.fechaMovimiento">Fecha Movimiento</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fechaCreacion">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.fechaCreacion">Fecha Creacion</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fechaModificacion">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.fechaModificacion">Fecha Modificacion</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="usuarioCreacion">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.usuarioCreacion">Usuario Creacion</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="usuarioModificacion">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.usuarioModificacion">Usuario Modificacion</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="producto.nombre">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.producto">Producto</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="localOrigen.nombre">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.localOrigen">Local Origen</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="localDestino.nombre">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.movimiento.localDestino">Local Destino</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movimiento of movimientos(); track trackId(movimiento)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/movimiento', movimiento.id, 'view']">{{ movimiento.id }}</a>
+              </td>
+              <td [jhiTranslate]="'inventarioApp.TipoMovimiento.' + (movimiento.tipo ?? 'null')">
+                {{
+                  { null: '', ENTRADA: 'ENTRADA', SALIDA: 'SALIDA', TRANSFERENCIA: 'TRANSFERENCIA', AJUSTE: 'AJUSTE' }[
+                    movimiento.tipo ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>{{ movimiento.cantidad }}</td>
+              <td>{{ movimiento.referencia }}</td>
+              <td>{{ movimiento.fechaMovimiento | formatMediumDatetime }}</td>
+              <td>{{ movimiento.fechaCreacion | formatMediumDatetime }}</td>
+              <td>{{ movimiento.fechaModificacion | formatMediumDatetime }}</td>
+              <td>{{ movimiento.usuarioCreacion }}</td>
+              <td>{{ movimiento.usuarioModificacion }}</td>
+              <td>
+                @if (movimiento.producto) {
+                  <div>
+                    <a [routerLink]="['/producto', movimiento.producto.id, 'view']">{{ movimiento.producto.nombre }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (movimiento.localOrigen) {
+                  <div>
+                    <a [routerLink]="['/local', movimiento.localOrigen.id, 'view']">{{ movimiento.localOrigen.nombre }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (movimiento.localDestino) {
+                  <div>
+                    <a [routerLink]="['/local', movimiento.localDestino.id, 'view']">{{ movimiento.localDestino.nombre }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/movimiento', movimiento.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/movimiento', movimiento.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(movimiento)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

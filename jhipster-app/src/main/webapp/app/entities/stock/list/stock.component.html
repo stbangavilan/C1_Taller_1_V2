@@ -1,0 +1,110 @@
+<div>
+  <h2 id="page-heading" data-cy="StockHeading">
+    <span jhiTranslate="inventarioApp.stock.home.title">Stocks</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="inventarioApp.stock.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-stock"
+        [routerLink]="['/stock/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="inventarioApp.stock.home.createLabel">Create a new Stock</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (stocks().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="inventarioApp.stock.home.notFound">No Stocks found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="cantidad">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.stock.cantidad">Cantidad</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="producto.nombre">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.stock.producto">Producto</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="local.nombre">
+              <div class="d-flex">
+                <span jhiTranslate="inventarioApp.stock.local">Local</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (stock of stocks(); track trackId(stock)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/stock', stock.id, 'view']">{{ stock.id }}</a>
+              </td>
+              <td>{{ stock.cantidad }}</td>
+              <td>
+                @if (stock.producto) {
+                  <div>
+                    <a [routerLink]="['/producto', stock.producto.id, 'view']">{{ stock.producto.nombre }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (stock.local) {
+                  <div>
+                    <a [routerLink]="['/local', stock.local.id, 'view']">{{ stock.local.nombre }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/stock', stock.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/stock', stock.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(stock)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

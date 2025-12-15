@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (local(); as localRef) {
+      <div>
+        <h2 data-cy="localDetailsHeading"><span jhiTranslate="inventarioApp.local.detail.title">Local</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ localRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.local.nombre">Nombre</span></dt>
+          <dd>
+            <span>{{ localRef.nombre }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.local.ubicacion">Ubicacion</span></dt>
+          <dd>
+            <span>{{ localRef.ubicacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.local.fechaCreacion">Fecha Creacion</span></dt>
+          <dd>
+            <span>{{ localRef.fechaCreacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.local.fechaModificacion">Fecha Modificacion</span></dt>
+          <dd>
+            <span>{{ localRef.fechaModificacion | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.local.usuarioCreacion">Usuario Creacion</span></dt>
+          <dd>
+            <span>{{ localRef.usuarioCreacion }}</span>
+          </dd>
+          <dt><span jhiTranslate="inventarioApp.local.usuarioModificacion">Usuario Modificacion</span></dt>
+          <dd>
+            <span>{{ localRef.usuarioModificacion }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/local', localRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
