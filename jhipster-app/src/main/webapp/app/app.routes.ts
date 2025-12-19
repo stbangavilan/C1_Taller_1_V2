@@ -8,8 +8,8 @@ import { errorRoute } from './layouts/error/error.route';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./home/home.component'),
-    title: 'home.title',
+    loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
+    title: 'Home',
   },
   {
     path: '',

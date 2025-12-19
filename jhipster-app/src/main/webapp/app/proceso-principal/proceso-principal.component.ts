@@ -1,82 +1,114 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-interface MovimientoModelo {
-  tipo: string;
-  localOrigen: string;
-  localDestino: string;
-  producto: string;
-  cantidad: number | null;
-  fecha: string;
-  referencia: string;
-}
+import {
+  ProcesoPrincipalService
+} from 'app/proceso-principal/proceso-principal.service';
+import {
+  ProcesoPrincipalRequest,
+  TipoMovimiento
+} from 'app/proceso-principal/proceso-principal.model';
 
 @Component({
   standalone: true,
   selector: 'jhi-proceso-principal',
   templateUrl: './proceso-principal.component.html',
   styleUrls: ['./proceso-principal.component.scss'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
 })
 export class ProcesoPrincipalComponent {
-  // combos
-  tiposMovimiento: string[] = ['ENTRADA', 'SALIDA', 'TRANSFERENCIA', 'AJUSTE'];
+  loading = false;
+  errorMsg?: string;
+  respuesta?: any;
 
-  locales: string[] = [
-    'Casa Central',
-    'Depósito San Lorenzo',
-    'Sucursal Asunción',
-    'Sucursal San Lorenzo',
+  tiposMovimiento: TipoMovimiento[] = ['ENTRADA', 'SALIDA', 'TRANSFERENCIA', 'AJUSTE'];
+
+  // 🔹 IDs fijos (como acordamos)
+  locales = [
+    { id: 1, nombre: 'Casa Central' },
+    { id: 2, nombre: 'Depósito San Lorenzo' },
+    { id: 3, nombre: 'Sucursal Asunción' },
   ];
 
-  productos: string[] = [
-    'Notebook Lenovo',
-    'Mouse Logitech',
-    'Silla gamer',
-    'Monitor 24"',
+  productos = [
+    { id: 1, nombre: 'boohoo' },
+    { id: 2, nombre: 'precedent until terribly' },
   ];
 
-  // pasos para el panel lateral
-  pasos: string[] = [
-    '1. Seleccionar tipo de movimiento',
-    '2. Definir local de origen y destino',
-    '3. Elegir producto',
-    '4. Ingresar cantidad, fecha y referencia',
-    '5. Confirmar y registrar el movimiento',
-  ];
+  form = this.fb.group({
+    tipo: ['ENTRADA', Validators.required],
+    productoId: [null, Validators.required],
+    cantidad: [null, [Validators.required, Validators.min(0.01)]],
+    localOrigenId: [null],
+    localDestinoId: [null],
+    referencia: [''],
+  });
 
-  // modelo del formulario (lo que te marcaba error)
-  modelo: MovimientoModelo = {
-    tipo: '',
-    localOrigen: '',
-    localDestino: '',
-    producto: '',
-    cantidad: null,
-    fecha: '',
-    referencia: '',
-  };
+  constructor(
+    private fb: FormBuilder,
+    private procesoService: ProcesoPrincipalService
+  ) {}
 
-  // historial de movimientos simulados
-  historial: MovimientoModelo[] = [];
+  registrar(): void {
+    this.errorMsg = undefined;
+    this.respuesta = undefined;
 
-  guardarMovimiento(): void {
-    if (!this.modelo.tipo || !this.modelo.producto || !this.modelo.cantidad) {
-      // validación mínima
+    if (this.form.invalid) {
+      this.errorMsg = 'Formulario inválido';
+      this.form.markAllAsTouched();
       return;
     }
 
-    this.historial = [...this.historial, { ...this.modelo }];
+    const raw = this.form.getRawValue();
 
-    // reseteamos el formulario
-    this.modelo = {
-      tipo: '',
-      localOrigen: '',
-      localDestino: '',
-      producto: '',
-      cantidad: null,
-      fecha: '',
-      referencia: '',
+    const payload: ProcesoPrincipalRequest = {
+    tipo: raw.tipo as TipoMovimiento,
+
+    // Convertimos a number sí o sí (porque el form puede traer null o string)
+    productoId: Number(raw.productoId),
+    cantidad: Number(raw.cantidad),
+
+    // si vienen null, mandamos undefined (así no viajan al backend)
+    localOrigenId: raw.localOrigenId ?? undefined,
+    localDestinoId: raw.localDestinoId ?? undefined,
+
+    referencia: raw.referencia ?? undefined,
     };
+
+
+    // Validaciones mínimas de negocio (frontend)
+    if (payload.tipo === 'ENTRADA' && !payload.localDestinoId) {
+    this.errorMsg = 'Para ENTRADA debe indicar local destino';
+    return;
+    }
+
+    if ((payload.tipo === 'SALIDA' || payload.tipo === 'AJUSTE') && !payload.localOrigenId) {
+      this.errorMsg = `Para ${payload.tipo} debe indicar local origen`;
+      return;
+    }
+
+    if (payload.tipo === 'TRANSFERENCIA' && (!payload.localOrigenId || !payload.localDestinoId)) {
+      this.errorMsg = 'Para TRANSFERENCIA debe indicar origen y destino';
+      return;
+    }
+
+
+    this.loading = true;
+
+    this.procesoService.ejecutar(payload).subscribe({
+      next: res => {
+        this.respuesta = res;
+        this.loading = false;
+        this.form.reset({ tipo: 'ENTRADA' });
+      },
+      error: err => {
+        this.errorMsg =
+          err?.error?.detail ||
+          err?.error?.message ||
+          'Error al ejecutar el proceso';
+        this.loading = false;
+      },
+    });
   }
 }

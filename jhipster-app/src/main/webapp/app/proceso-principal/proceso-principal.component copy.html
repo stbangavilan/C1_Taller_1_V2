@@ -1,0 +1,180 @@
+<div class="container-fluid proceso-wrapper">
+  <div class="row mb-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="h3 mb-1">Proceso principal: Movimiento de stock</h1>
+        <p class="text-muted mb-0">Registrar ENTRADA / SALIDA / TRANSFERENCIA / AJUSTE (integrado con backend).</p>
+      </div>
+      <span class="badge bg-success">Integrado con backend</span>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="errorMsg">
+    <div class="col-12">
+      <div class="alert alert-danger py-2">{{ errorMsg }}</div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="okMsg">
+    <div class="col-12">
+      <div class="alert alert-success py-2">{{ okMsg }}</div>
+    </div>
+  </div>
+
+  <div class="row gy-3">
+    <!-- Izquierda -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-header py-2">
+          <strong>Datos del movimiento</strong>
+        </div>
+
+        <div class="card-body">
+          <form class="row g-3" [formGroup]="form" (ngSubmit)="registrarMovimiento()">
+            <div class="col-12">
+              <label class="form-label">Tipo de movimiento</label>
+              <select class="form-select" formControlName="tipo" (change)="onTipoChange()">
+                <option *ngFor="let t of tiposMovimiento" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Local origen</label>
+              <select
+                class="form-select"
+                formControlName="localOrigenId"
+                [disabled]="tipoActual === 'ENTRADA'"
+              >
+                <option [ngValue]="null">-- Seleccionar --</option>
+                <option *ngFor="let local of locales" [ngValue]="local.id">
+                  {{ local.nombre }}
+                </option>
+              </select>
+              <div class="form-text" *ngIf="tipoActual === 'ENTRADA'">Para ENTRADA no se usa origen.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Local destino</label>
+              <select
+                class="form-select"
+                formControlName="localDestinoId"
+                [disabled]="tipoActual === 'SALIDA'"
+              >
+                <option [ngValue]="null">-- Seleccionar --</option>
+                <option *ngFor="let local of locales" [ngValue]="local.id">
+                  {{ local.nombre }}
+                </option>
+              </select>
+              <div class="form-text" *ngIf="tipoActual === 'SALIDA'">Para SALIDA no se usa destino.</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Producto</label>
+              <select class="form-select" formControlName="productoId">
+                <option [ngValue]="null">-- Seleccionar --</option>
+                <option *ngFor="let prod of productos" [ngValue]="prod.id">
+                  {{ prod.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Cantidad</label>
+              <input type="number" min="0" step="0.01" class="form-control" formControlName="cantidad" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Referencia</label>
+              <input type="text" class="form-control" formControlName="referencia" />
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="limpiar()" [disabled]="loading">
+                Limpiar
+              </button>
+
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="loading">
+                {{ loading ? 'Procesando...' : 'Registrar movimiento' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centro -->
+    <div class="col-lg-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-header py-2">
+          <strong>Flujo del proceso</strong>
+        </div>
+        <div class="card-body">
+          <ol class="list-unstyled">
+            <li *ngFor="let paso of pasos; let i = index" class="mb-2">
+              <span class="badge bg-primary me-2">{{ i + 1 }}</span>{{ paso }}
+            </li>
+          </ol>
+          <div class="alert alert-info mt-3 mb-0 small">
+            Este flujo ejecuta el backend vía <code>POST /api/proceso-principal</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Derecha -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header py-2">
+          <strong>Resumen</strong>
+        </div>
+        <div class="card-body small">
+          <p class="mb-1"><strong>Tipo:</strong> {{ tipoActual }}</p>
+          <p class="mb-1"><strong>Origen:</strong> {{ nombreLocal(form.get('localOrigenId')?.value) }}</p>
+          <p class="mb-1"><strong>Destino:</strong> {{ nombreLocal(form.get('localDestinoId')?.value) }}</p>
+          <p class="mb-1"><strong>Producto:</strong> {{ nombreProducto(form.get('productoId')?.value) }}</p>
+          <p class="mb-1"><strong>Cantidad:</strong> {{ form.get('cantidad')?.value }}</p>
+          <p class="mb-0"><strong>Referencia:</strong> {{ form.get('referencia')?.value }}</p>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header py-2">
+          <strong>Historial reciente</strong>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0 align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Producto</th>
+                  <th class="text-end">Cant.</th>
+                  <th>Locales</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let mov of historial">
+                  <td>{{ mov.fecha }}</td>
+                  <td><span class="badge bg-secondary">{{ mov.tipo }}</span></td>
+                  <td>{{ nombreProducto(mov.productoId) }}</td>
+                  <td class="text-end">{{ mov.cantidad }}</td>
+                  <td>
+                    {{ nombreLocal(mov.localOrigenId) }} → {{ nombreLocal(mov.localDestinoId) }}
+                  </td>
+                </tr>
+
+                <tr *ngIf="historial.length === 0">
+                  <td colspan="5" class="text-center text-muted py-3">Sin movimientos registrados aún.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
